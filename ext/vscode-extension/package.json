@@ -3,9 +3,11 @@
   "displayName": "Stylecast",
   "description": "Visual element editor - receive styled components from browser",
   "version": "1.0.0",
-  "publisher": "taradepan",
+  "publisher": "TaradepanR",
+  "icon": "icons/icon.png",
+  "license": "MIT",
   "author": {
-    "name": "Taradepan",
+    "name": "Taradepan R",
     "url": "https://github.com/taradepan"
   },
   "repository": {
@@ -13,7 +15,7 @@
     "url": "https://github.com/taradepan/stylecast.git"
   },
   "engines": {
-    "vscode": "^1.104.0"
+    "vscode": "^1.75.0"
   },
   "categories": [
     "Other"
@@ -67,6 +69,12 @@
         "title": "Paste Message to GitHub Copilot Chat",
         "category": "Stylecast",
         "icon": "$(github)"
+      },
+      {
+        "command": "stylecast.resetProcessing",
+        "title": "Reset Processing Flag (Debug)",
+        "category": "Stylecast",
+        "icon": "$(debug-restart)"
       }
     ],
     "keybindings": [
@@ -106,6 +114,10 @@
         },
         {
           "command": "stylecast.sendToCopilot",
+          "when": "true"
+        },
+        {
+          "command": "stylecast.resetProcessing",
           "when": "true"
         }
       ]
@@ -152,7 +164,7 @@
         "stylecast.autoSendToCopilot": {
           "type": "boolean",
           "default": true,
-          "description": "Automatically paste styled components into GitHub Copilot Chat",
+          "description": "Automatically paste styled components into AI Chat (GitHub Copilot in VS Code, Cursor Chat in Cursor)",
           "scope": "window"
         },
         "stylecast.copilotPrefix": {
@@ -164,7 +176,7 @@
         "stylecast.enableCopilotIntegration": {
           "type": "boolean",
           "default": true,
-          "description": "Enable automatic Copilot Chat integration",
+          "description": "Enable automatic AI Chat integration (GitHub Copilot in VS Code, Cursor Chat in Cursor)",
           "scope": "window"
         }
       }
@@ -185,7 +197,7 @@
     "@eslint/eslintrc": "^3.1.0",
     "@eslint/js": "^9.15.0",
     "@types/node": "^22.0.0",
-    "@types/vscode": "^1.104.0",
+    "@types/vscode": "^1.75.0",
     "@types/ws": "^8.5.12",
     "@typescript-eslint/eslint-plugin": "^8.15.0",
     "@typescript-eslint/parser": "^8.15.0",

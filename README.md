@@ -1,6 +1,6 @@
 # 🎨 Stylecast
 
-**Visual element editor that connects your browser to VS Code!**
+**Visual element editor that connects your browser to VS Code and Cursor!**
 
 Style any website element visually and send the changes directly to GitHub Copilot Chat - no copy/paste required.
 
@@ -14,17 +14,17 @@ Style any website element visually and send the changes directly to GitHub Copil
 
 ## 📦 Installation
 
-### Step 1: Install VS Code Extension
+### Step 1: Install VS Code/Cursor Extension
 
 **Option A: From Marketplace (Recommended)**
-1. Open VS Code
+1. Open VS Code or Cursor
 2. Go to Extensions (`Ctrl+Shift+X`)
 3. Search for "Stylecast"
 4. Click Install
 
 **Option B: Manual Install**
 1. Download `stylecast-1.0.0.vsix` from this repository
-2. In VS Code: Extensions → "..." menu → "Install from VSIX"
+2. In VS Code/Cursor: Extensions → "..." menu → "Install from VSIX"
 3. Select the downloaded file
 
 ### Step 2: Install Browser Extension
@@ -60,30 +60,30 @@ Style any website element visually and send the changes directly to GitHub Copil
 - **Border**: Width, style (solid/dashed/dotted), radius, color
 - **Appearance**: Box shadow with presets (small, medium, large, glows)
 
-### From VS Code:
+### From VS Code/Cursor:
 1. Press `Ctrl+Shift+W` (or `Cmd+Shift+W` on Mac)
 2. Type your message
 3. It appears in any connected browser extensions
 
 ## ⚙️ Configuration
 
-In VS Code Settings (`Ctrl+,`), search for "Stylecast":
+In VS Code/Cursor Settings (`Ctrl+,`), search for "Stylecast":
 
-- **Auto-start server**: Automatically start on VS Code launch (default: enabled)
+- **Auto-start server**: Automatically start on VS Code/Cursor launch (default: enabled)
 - **Port**: WebSocket server port (default: 47823)
-- **Auto-send to Copilot**: Automatically paste styled components to Copilot (default: enabled)
-- **Message prefix**: Text added before Copilot messages (default: empty)
-- **Enable Copilot Integration**: Auto-open Copilot Chat when receiving changes (default: enabled)
+- **Auto-send to Copilot**: Automatically paste styled components to AI Chat (default: enabled)
+- **Message prefix**: Text added before AI Chat messages (default: empty)
+- **Enable Copilot Integration**: Auto-open AI Chat when receiving changes - GitHub Copilot in VS Code, Cursor Chat in Cursor (default: enabled)
 
 ## 🔧 Troubleshooting
 
-**VS Code extension not working?**
+**VS Code/Cursor extension not working?**
 - Check status bar for "🟢 Stylecast: 0" indicator
 - Make sure GitHub Copilot extension is installed
-- Restart VS Code if needed
+- Restart VS Code/Cursor if needed
 
 **Browser extension can't connect?**
-- Ensure VS Code is running with Stylecast extension
+- Ensure VS Code/Cursor is running with Stylecast extension
 - Check if port 47823 is blocked by firewall
 - Try refreshing the browser extension
 
@@ -92,25 +92,57 @@ In VS Code Settings (`Ctrl+,`), search for "Stylecast":
 - Try right-clicking the element again
 - Check browser console for errors
 
-**Changes not going to Copilot?**
-- Make sure GitHub Copilot extension is installed and active
-- Check VS Code Output panel (View → Output → "WebSocket Bridge")
-- Verify you're signed in to GitHub Copilot
+**Changes not going to AI Chat?**
+- **In VS Code**: Make sure GitHub Copilot extension is installed and active
+- **In Cursor**: Ensure Cursor Chat is available (built-in feature)
+- Check VS Code/Cursor Output panel (View → Output → "Stylecast") to see which editor was detected
+- Verify the detected editor is correct: Look for "Detected editor: Cursor" or "Detected editor: VS Code"
 - Try disabling/enabling "Enable Copilot Integration" in settings
+- Content is always copied to clipboard as a fallback - you can manually paste into the chat
 
 ## 🛡️ Privacy & Security
 
 - **Local only**: All communication stays on your machine (localhost)
-- **No external servers**: Direct connection between browser and VS Code
+- **No external servers**: Direct connection between browser and VS Code/Cursor
 - **No data collection**: Your messages are never sent to external services
 - **Open source**: Full source code available for review
 
 ## 📋 Requirements
 
-- **VS Code**: Version 1.95.0 or higher
+- **VS Code/Cursor**: Version 1.75.0 or higher
 - **GitHub Copilot**: Extension installed and active
 - **Browser**: Chrome 88+, Edge 88+, or Firefox 78+
 - **Operating System**: Windows, macOS, or Linux
+
+## 🎯 Cursor Compatibility
+
+Stylecast is fully compatible with **Cursor** (AI-powered code editor)! The extension **automatically detects** which editor you're using and routes messages to the appropriate AI chat.
+
+### Smart AI Chat Integration:
+- 🤖 **In VS Code**: Automatically opens GitHub Copilot Chat
+- 🎯 **In Cursor**: Automatically opens Cursor Chat (native AI)
+- 🔍 **Auto-detection**: No configuration needed - works out of the box!
+
+### How It Works:
+1. The extension detects your editor on startup (using `vscode.env.appName`)
+2. When you send styled components from the browser, they're automatically routed to:
+   - **GitHub Copilot Chat** if you're in VS Code
+   - **Cursor Chat** if you're in Cursor
+3. Content is copied to clipboard and pasted directly into the chat
+
+### All Features Supported:
+- ✅ WebSocket server runs on same port (47823)
+- ✅ Status bar and notifications work identically
+- ✅ Configuration settings are preserved
+- ✅ Browser extension connects seamlessly
+- ✅ Visual element editing works the same
+
+### Checking Your Editor:
+Look at the Output panel (View → Output → "Stylecast") to see which editor was detected:
+```
+Stylecast extension activating in Cursor...
+Detected editor: Cursor
+```
 
 ## 🏗️ Project Structure
 
@@ -145,12 +177,12 @@ cd ext/browser-extension
 # Load as unpacked extension in Chrome/Edge/Firefox
 ```
 
-**VS Code Extension:**
+**VS Code/Cursor Extension:**
 ```bash
 cd ext/vscode-extension
 npm install
 npm run compile
-# Press F5 in VS Code to debug
+# Press F5 in VS Code/Cursor to debug
 ```
 
 **Build for Distribution:**

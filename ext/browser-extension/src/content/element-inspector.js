@@ -12,6 +12,7 @@ class ProductionElementInspector {
     this.overlay = null;
     this.tooltip = null;
     this.isEditing = false;
+    this.isSending = false; // Prevent duplicate sends
     
     // Track UI elements to avoid selecting them
     this.uiElements = new Set();
@@ -768,6 +769,16 @@ class ProductionElementInspector {
 
   activate() {
     this.isActive = true;
+    
+    // Re-add event listeners if they exist (they might have been removed by deactivate)
+    if (this.mouseOverHandler) {
+      document.addEventListener('mouseover', this.mouseOverHandler, true);
+      document.addEventListener('mouseout', this.mouseOutHandler, true);
+      document.addEventListener('click', this.clickHandler, true);
+      document.addEventListener('contextmenu', this.contextMenuHandler, true);
+      document.addEventListener('keydown', this.keydownHandler);
+    }
+    
     // Don't show overlay until hovering
   }
 
@@ -776,6 +787,23 @@ class ProductionElementInspector {
     this.isEditing = false;
     this.selectedElement = null;
     this.originalElement = null;
+
+    // Remove event listeners
+    if (this.mouseOverHandler) {
+      document.removeEventListener('mouseover', this.mouseOverHandler, true);
+    }
+    if (this.mouseOutHandler) {
+      document.removeEventListener('mouseout', this.mouseOutHandler, true);
+    }
+    if (this.clickHandler) {
+      document.removeEventListener('click', this.clickHandler, true);
+    }
+    if (this.contextMenuHandler) {
+      document.removeEventListener('contextmenu', this.contextMenuHandler, true);
+    }
+    if (this.keydownHandler) {
+      document.removeEventListener('keydown', this.keydownHandler);
+    }
 
     // Ensure all UI elements are hidden
     if (this.overlay) {
@@ -786,6 +814,13 @@ class ProductionElementInspector {
     }
     if (this.editPanel) {
       this.editPanel.style.display = 'none';
+    }
+    
+    // Notify popup that inspector has stopped
+    try {
+      chrome.runtime.sendMessage({ action: 'inspectorStopped' }).catch(() => {});
+    } catch (error) {
+      // Ignore errors if popup is closed
     }
   }
 
@@ -876,7 +911,12 @@ class ProductionElementInspector {
       });
       
       if (response && response.success) {
-        this.showNotification('Element sent to VS Code!', 'success');
+        this.showNotification('✅ Element sent! Stopping inspector...', 'success');
+        
+        // Auto-stop inspector after successful send
+        setTimeout(() => {
+          this.deactivate();
+        }, 1500);
       } else {
         this.showNotification('Failed to send to VS Code', 'error');
       }
@@ -1242,6 +1282,22 @@ class ProductionElementInspector {
   async submitChanges() {
     if (!this.selectedElement) return;
     
+    // Prevent duplicate sends
+    if (this.isSending) {
+      console.log('⚠️ Send already in progress, ignoring duplicate request');
+      return { success: false, error: 'Send already in progress' };
+    }
+    
+    this.isSending = true;
+    
+    // Auto-reset sending flag after 15 seconds as safety measure
+    setTimeout(() => {
+      if (this.isSending) {
+        console.log('⚠️ Auto-resetting sending flag after timeout');
+        this.isSending = false;
+      }
+    }, 15000);
+    
     try {
       const submitBtn = this.editPanel.querySelector('#submitBtn');
       const originalText = submitBtn.innerHTML;
@@ -1267,9 +1323,9 @@ class ProductionElementInspector {
         }
       };
 
-
+      // Send directly to VS Code via background script - ONLY ONCE
       const response = await chrome.runtime.sendMessage({
-          action: 'sendToVSCode',
+        action: 'sendToVSCode',
         data: {
           type: 'element-edit',
           content: JSON.stringify(editData),
@@ -1277,16 +1333,25 @@ class ProductionElementInspector {
         }
       });
 
-
       submitBtn.innerHTML = originalText;
       submitBtn.disabled = false;
+      this.isSending = false;
+
+      // Auto-stop inspector after successful send
+      this.showNotification('✅ Changes sent! Stopping inspector...', 'success');
+      
+      // Wait a moment to show the notification, then stop inspector
+      setTimeout(() => {
+        this.deactivate();
+        this.hideEditPanel();
+      }, 1500);
 
       return response;
     } catch (error) {
-
       const submitBtn = this.editPanel.querySelector('#submitBtn');
       submitBtn.innerHTML = '🚀 Send to VS Code';
       submitBtn.disabled = false;
+      this.isSending = false;
 
       return { success: false, error: error.message };
     }
@@ -2141,7 +2206,12 @@ class ProductionElementInspector {
           data: data
       });
 
-      this.showNotification('Code extracted to VS Code!', 'success');
+      this.showNotification('✅ Code extracted! Stopping inspector...', 'success');
+      
+      // Auto-stop inspector after successful send
+      setTimeout(() => {
+        this.deactivate();
+      }, 1500);
     } catch (error) {
       this.showNotification('Failed to extract code', 'error');
     }

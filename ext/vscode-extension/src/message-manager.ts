@@ -1,8 +1,10 @@
 import * as vscode from 'vscode';
 import { BridgeMessage } from './types';
+import { EditorDetector } from './editor-detection';
 
 export class MessageManager {
   private readonly outputChannel: vscode.OutputChannel;
+  private isProcessing = false; // Prevent duplicate processing
 
   constructor(private context: vscode.ExtensionContext) {
     this.outputChannel = vscode.window.createOutputChannel('Stylecast');
@@ -11,29 +13,52 @@ export class MessageManager {
   handleBrowserMessage(message: BridgeMessage): void {
     // Enhanced processing with proper timing for Copilot integration
     try {
-      this.outputChannel.appendLine(`Received message type: ${message.type}`);
+      this.outputChannel.appendLine(`📨 Received message type: ${message.type}`);
+      this.outputChannel.appendLine(`📨 Message ID: ${message.id}`);
+      this.outputChannel.appendLine(`📨 Content length: ${message.content?.length || 0}`);
 
       // Quick validation only
       if (!message || !message.content || message.content.length > 100000) {
-        this.outputChannel.appendLine('Message validation failed');
+        this.outputChannel.appendLine('❌ Message validation failed');
         return;
       }
+
+      // Prevent duplicate processing with timeout reset
+      if (this.isProcessing) {
+        this.outputChannel.appendLine('⚠️ Message already being processed, ignoring duplicate');
+        return;
+      }
+
+      this.isProcessing = true;
+      
+      // Auto-reset processing flag after 10 seconds as safety measure
+      setTimeout(() => {
+        if (this.isProcessing) {
+          this.outputChannel.appendLine('⚠️ Auto-resetting processing flag after timeout');
+          this.isProcessing = false;
+        }
+      }, 10000);
 
       // Handle different message types
       if (message.type === 'element-edit') {
         this.outputChannel.appendLine('Processing element-edit message');
         this.handleElementEdit(message).catch((error) => {
           this.outputChannel.appendLine(`Error in handleElementEdit: ${error}`);
+        }).finally(() => {
+          this.isProcessing = false;
         });
       } else {
         this.outputChannel.appendLine('Processing as copilot message');
         // Process clipboard and Copilot with proper timing
         this.processForCopilot(message).catch((error) => {
           this.outputChannel.appendLine(`Error in processForCopilot: ${error}`);
+        }).finally(() => {
+          this.isProcessing = false;
         });
       }
     } catch (error) {
       this.outputChannel.appendLine(`Error handling message: ${error}`);
+      this.isProcessing = false;
     }
   }
 
@@ -381,7 +406,114 @@ export class MessageManager {
 
   private async autoOpenCopilotChat(): Promise<boolean> {
     try {
-      // Try multiple commands to open Copilot Chat
+      const isCursor = EditorDetector.isCursor();
+      const editorName = EditorDetector.getEditorName();
+      
+      this.outputChannel.appendLine(`Detected editor: ${editorName}`);
+
+      if (isCursor) {
+        // Cursor-specific chat commands
+        return await this.openCursorChat();
+      } else {
+        // VS Code Copilot commands
+        return await this.openVSCodeCopilotChat();
+      }
+    } catch (error) {
+      this.outputChannel.appendLine(`Failed to auto-open chat: ${error}`);
+      return false;
+    }
+  }
+
+  private async openCursorChat(): Promise<boolean> {
+    try {
+      // Get the content from clipboard
+      const content = await vscode.env.clipboard.readText();
+      
+      // Try to open Cursor Chat with content directly
+      const cursorChatCommands = [
+        'aichat.newchataction',
+        'workbench.action.chat.open',
+        'workbench.panel.chat.view.copilot.focus',
+        'workbench.view.chat'
+      ];
+
+      let chatOpened = false;
+      
+      // Try to open chat
+      for (const command of cursorChatCommands) {
+        try {
+          this.outputChannel.appendLine(`Trying Cursor command: ${command}`);
+          await vscode.commands.executeCommand(command);
+          this.outputChannel.appendLine(`✅ Successfully executed: ${command}`);
+          chatOpened = true;
+          break; // Stop after first successful command
+        } catch (error) {
+          this.outputChannel.appendLine(`❌ Failed Cursor command: ${command}`);
+          continue;
+        }
+      }
+
+      if (!chatOpened) {
+        this.outputChannel.appendLine('⚠️ Could not open Cursor Chat automatically');
+        return false;
+      }
+
+      // Wait for chat to open
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      try {
+        // Try to paste into the chat input field
+        const chatPasteCommands = [
+          'aichat.pasteToChat',
+          'workbench.action.chat.paste',
+          'editor.action.clipboardPasteAction' // Fallback
+        ];
+        
+        let pasted = false;
+        for (const pasteCommand of chatPasteCommands) {
+          try {
+            await vscode.commands.executeCommand(pasteCommand);
+            this.outputChannel.appendLine(`✅ Content pasted to Cursor Chat using: ${pasteCommand}`);
+            pasted = true;
+            break;
+          } catch (error) {
+            this.outputChannel.appendLine(`❌ Failed paste command: ${pasteCommand}`);
+            continue;
+          }
+        }
+        
+        if (!pasted) {
+          this.outputChannel.appendLine('⚠️ Could not paste to Cursor Chat automatically');
+          // Show manual instruction
+          vscode.window.showInformationMessage(
+            'Cursor Chat opened! Please paste the content manually (Ctrl+V) into the chat input.',
+            'OK'
+          );
+          return false;
+        }
+        
+        return true;
+      } catch (pasteError) {
+        this.outputChannel.appendLine(`⚠️ Could not paste automatically: ${pasteError}`);
+        // Show manual instruction
+        vscode.window.showInformationMessage(
+          'Cursor Chat opened! Please paste the content manually (Ctrl+V) into the chat input.',
+          'OK'
+        );
+        return false;
+      }
+    } catch (error) {
+      this.outputChannel.appendLine(`Error opening Cursor Chat: ${error}`);
+      return false;
+    }
+  }
+
+  private async openVSCodeCopilotChat(): Promise<boolean> {
+    try {
+      // Get the content from clipboard
+      const content = await vscode.env.clipboard.readText();
+      
+      // Try to open VS Code Copilot Chat
       const copilotCommands = [
         'github.copilot.chat.focus',
         'workbench.panel.chat.view.copilot.focus',
@@ -391,27 +523,73 @@ export class MessageManager {
         'workbench.view.chat'
       ];
 
+      let chatOpened = false;
+      
+      // Try to open chat
       for (const command of copilotCommands) {
         try {
+          this.outputChannel.appendLine(`Trying VS Code command: ${command}`);
           await vscode.commands.executeCommand(command);
-          // Wait a bit for the chat to open
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          
-          // Try to paste the content
-          await vscode.commands.executeCommand('editor.action.clipboardPasteAction');
-          
-          // If we get here without error, it worked
-          return true;
+          this.outputChannel.appendLine(`✅ Successfully executed: ${command}`);
+          chatOpened = true;
+          break; // Stop after first successful command
         } catch (error) {
-          // Try next command
+          this.outputChannel.appendLine(`❌ Failed VS Code command: ${command}`);
           continue;
         }
       }
 
+      if (!chatOpened) {
+        this.outputChannel.appendLine('⚠️ Could not open Copilot Chat automatically');
+        return false;
+      }
 
-      return false;
+      // Wait for chat to open
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      try {
+        // Try to paste into the chat input field
+        const chatPasteCommands = [
+          'github.copilot.chat.paste',
+          'workbench.action.chat.paste',
+          'editor.action.clipboardPasteAction' // Fallback
+        ];
+        
+        let pasted = false;
+        for (const pasteCommand of chatPasteCommands) {
+          try {
+            await vscode.commands.executeCommand(pasteCommand);
+            this.outputChannel.appendLine(`✅ Content pasted to Copilot Chat using: ${pasteCommand}`);
+            pasted = true;
+            break;
+          } catch (error) {
+            this.outputChannel.appendLine(`❌ Failed paste command: ${pasteCommand}`);
+            continue;
+          }
+        }
+        
+        if (!pasted) {
+          this.outputChannel.appendLine('⚠️ Could not paste to Copilot Chat automatically');
+          // Show manual instruction
+          vscode.window.showInformationMessage(
+            'GitHub Copilot Chat opened! Please paste the content manually (Ctrl+V) into the chat input.',
+            'OK'
+          );
+          return false;
+        }
+        
+        return true;
+      } catch (pasteError) {
+        this.outputChannel.appendLine(`⚠️ Could not paste automatically: ${pasteError}`);
+        // Show manual instruction
+        vscode.window.showInformationMessage(
+          'GitHub Copilot Chat opened! Please paste the content manually (Ctrl+V) into the chat input.',
+          'OK'
+        );
+        return false;
+      }
     } catch (error) {
-      this.outputChannel.appendLine(`Failed to auto-open Copilot Chat: ${error}`);
+      this.outputChannel.appendLine(`Error opening VS Code Copilot Chat: ${error}`);
       return false;
     }
   }
@@ -463,5 +641,11 @@ export class MessageManager {
 
   dispose(): void {
     this.outputChannel.dispose();
+  }
+
+  // Manual reset method for debugging
+  resetProcessingFlag(): void {
+    this.isProcessing = false;
+    this.outputChannel.appendLine('🔄 Manually reset processing flag');
   }
 }

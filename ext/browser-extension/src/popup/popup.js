@@ -271,6 +271,13 @@ class ElementInspectorPopup {
         this.openLiveEditor(message.elementData);
         sendResponse({ success: true });
       }
+      
+      // Handle inspector stopped notification
+      if (message.action === 'inspectorStopped') {
+        this.inspectorActive = false;
+        this.updateInspectorButton(false);
+        sendResponse({ success: true });
+      }
 
       return true;
     });
@@ -287,6 +294,7 @@ class ElementInspectorPopup {
     // Also check when window regains focus
     window.addEventListener('focus', () => {
       this.checkPendingElementEdit();
+      this.checkInspectorState();
     });
   }
 
@@ -616,7 +624,8 @@ class ElementInspectorPopup {
       });
 
       if (response && response.success) {
-        this.showSuccess('Changes sent to VS Code!');
+        this.showSuccess('✅ Changes sent to VS Code! Inspector will stop automatically.');
+        
         // Close live editor
         document.getElementById('livePreviewCard').style.display = 'none';
         this.livePreviewActive = false;
@@ -626,6 +635,8 @@ class ElementInspectorPopup {
         if (instructions) {
           instructions.style.display = 'flex';
         }
+        
+        // Note: Inspector will stop automatically via content script
       } else if (response && response.error) {
         this.showError(`Failed to send: ${response.error}`);
       } else {

@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { WebSocketServer } from './websocket-server';
 import { MessageManager } from './message-manager';
 import { BridgeMessage } from './types';
+import { EditorDetector } from './editor-detection';
 
 let server: WebSocketServer | undefined;
 let messageManager: MessageManager | undefined;
@@ -20,7 +21,8 @@ export function activate(context: vscode.ExtensionContext) {
 
   try {
     const outputChannel = vscode.window.createOutputChannel('Stylecast');
-    outputChannel.appendLine('Stylecast extension activating...');
+    const editorName = EditorDetector.getEditorName();
+    outputChannel.appendLine(`Stylecast extension activating in ${editorName}...`);
     disposables.push(outputChannel);
 
     // Initialize components with validation
@@ -310,6 +312,19 @@ function registerCommands(context: vscode.ExtensionContext): vscode.Disposable[]
     }
   );
 
+  // Reset processing flag command
+  const resetCommand = vscode.commands.registerCommand(
+    'stylecast.resetProcessing',
+    () => {
+      if (messageManager) {
+        messageManager.resetProcessingFlag();
+        vscode.window.showInformationMessage('Processing flag reset');
+      } else {
+        vscode.window.showErrorMessage('Message manager not initialized');
+      }
+    }
+  );
+
   // Debug function to test Copilot commands
   async function testCopilotCommands(outputChannel: vscode.OutputChannel) {
     const testCommands = [
@@ -348,7 +363,8 @@ function registerCommands(context: vscode.ExtensionContext): vscode.Disposable[]
     clearHistoryCommand,
     broadcastCommand,
     notificationCommand,
-    copilotCommand
+    copilotCommand,
+    resetCommand
   ];
 }
 
