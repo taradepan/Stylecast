@@ -1,0 +1,250 @@
+<!-- STYLECAST ELEMENT INSPECTOR - VERCEL BRUTALISM -->
+<link rel="stylesheet" href="element-inspector.css">
+
+<!-- Panel Header -->
+<div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
+  <div>
+    <div class="panel-title">STYLECAST</div>
+    <div class="panel-subtitle">Element Editor</div>
+  </div>
+  <button id="closePanel">×</button>
+</div>
+
+<!-- Element Info -->
+<div class="element-info-card">
+  <div id="elementInfo">
+    <div class="element-info-row">
+      <span class="element-info-label">Tag</span>
+      <span class="element-info-value" id="infoTag">-</span>
+    </div>
+    <div class="element-info-row">
+      <span class="element-info-label">ID</span>
+      <span class="element-info-value" id="infoId">-</span>
+    </div>
+    <div class="element-info-row">
+      <span class="element-info-label">Class</span>
+      <span class="element-info-value" id="infoClass">-</span>
+    </div>
+  </div>
+</div>
+
+<!-- Text Content -->
+<div class="section-header">TEXT CONTENT</div>
+<div class="form-section">
+  <div class="form-group">
+    <textarea id="textContent" class="panel-textarea" rows="3" placeholder="Element text..."></textarea>
+  </div>
+</div>
+
+<!-- Typography -->
+<div class="section-header">TYPOGRAPHY</div>
+<div class="form-section">
+  <div class="form-group">
+    <label class="form-label">Font Family</label>
+    <select id="fontFamily" class="panel-select">
+      <option value="Default">Default</option>
+      <option value="-apple-system, BlinkMacSystemFont, sans-serif">System</option>
+      <option value="Arial, sans-serif">Arial</option>
+      <option value="'Times New Roman', Times, serif">Times</option>
+      <option value="Georgia, serif">Georgia</option>
+      <option value="'Courier New', monospace">Courier</option>
+      <option value="Verdana, sans-serif">Verdana</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+      <label class="form-label" style="margin: 0;">Font Size</label>
+      <span class="value-display" id="fontSizeDisplay">16px</span>
+    </div>
+    <input type="range" id="fontSize" min="8" max="72" value="16">
+    <input type="text" id="fontSizeText" class="panel-input" value="16px" style="margin-top: 8px;">
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">Font Weight</label>
+    <select id="fontWeight" class="panel-select">
+      <option value="normal">Regular</option>
+      <option value="300">Light</option>
+      <option value="400">Regular</option>
+      <option value="500">Medium</option>
+      <option value="600">Semibold</option>
+      <option value="700">Bold</option>
+      <option value="900">Black</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+      <label class="form-label" style="margin: 0;">Line Height</label>
+      <span class="value-display" id="lineHeightDisplay">1.5</span>
+    </div>
+    <input type="range" id="lineHeight" min="0.8" max="3" step="0.1" value="1.5">
+    <input type="text" id="lineHeightText" class="panel-input" value="1.5" style="margin-top: 8px;">
+  </div>
+
+  <div class="form-group">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+      <label class="form-label" style="margin: 0;">Letter Spacing</label>
+      <span class="value-display" id="letterSpacingDisplay">0</span>
+    </div>
+    <input type="range" id="letterSpacing" min="-0.1" max="0.5" step="0.01" value="0">
+    <input type="text" id="letterSpacingText" class="panel-input" value="0em" style="margin-top: 8px;">
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">Text Align</label>
+    <div class="button-group grid-4">
+      <button type="button" class="btn-group-item align-btn" data-value="left">L</button>
+      <button type="button" class="btn-group-item align-btn" data-value="center">C</button>
+      <button type="button" class="btn-group-item align-btn" data-value="right">R</button>
+      <button type="button" class="btn-group-item align-btn" data-value="justify">J</button>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">Text Style</label>
+    <div class="button-group grid-4">
+      <button type="button" class="btn-group-item decoration-btn" data-value="italic" data-property="font-style" style="font-style: italic;">I</button>
+      <button type="button" class="btn-group-item decoration-btn" data-value="underline" data-property="text-decoration" style="text-decoration: underline;">U</button>
+      <button type="button" class="btn-group-item decoration-btn" data-value="line-through" data-property="text-decoration" style="text-decoration: line-through;">S</button>
+      <button type="button" class="btn-group-item decoration-btn" data-value="none" data-property="reset">∅</button>
+    </div>
+  </div>
+</div>
+
+<!-- Colors -->
+<div class="section-header">COLORS</div>
+<div class="form-section">
+  <div class="form-group">
+    <label class="form-label">Text Color</label>
+    <div style="display: flex; gap: 12px; align-items: center;">
+      <input type="color" id="textColor" value="#000000">
+      <input type="text" id="textColorText" class="panel-input" value="#000000" style="flex: 1;">
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">Background</label>
+    <div style="display: flex; gap: 12px; align-items: center;">
+      <input type="color" id="backgroundColor" value="#ffffff">
+      <input type="text" id="backgroundColorText" class="panel-input" value="transparent" style="flex: 1;">
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">Border Color</label>
+    <div style="display: flex; gap: 12px; align-items: center;">
+      <input type="color" id="borderColor" value="#000000">
+      <input type="text" id="borderColorText" class="panel-input" value="#000000" style="flex: 1;">
+    </div>
+  </div>
+</div>
+
+<!-- Layout -->
+<div class="section-header">LAYOUT</div>
+<div class="form-section">
+  <div class="form-group">
+    <label class="form-label">Width</label>
+    <input type="text" id="width" class="panel-input" placeholder="auto">
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">Height</label>
+    <input type="text" id="height" class="panel-input" placeholder="auto">
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">Display</label>
+    <select id="display" class="panel-select">
+      <option value="">Default</option>
+      <option value="block">Block</option>
+      <option value="inline">Inline</option>
+      <option value="inline-block">Inline Block</option>
+      <option value="flex">Flex</option>
+      <option value="grid">Grid</option>
+      <option value="none">None</option>
+    </select>
+  </div>
+</div>
+
+<!-- Spacing -->
+<div class="section-header">SPACING</div>
+<div class="form-section">
+  <div class="form-group">
+    <label class="form-label">Margin</label>
+    <div class="grid-2">
+      <input type="text" id="marginTop" class="panel-input" placeholder="Top">
+      <input type="text" id="marginRight" class="panel-input" placeholder="Right">
+      <input type="text" id="marginBottom" class="panel-input" placeholder="Bottom">
+      <input type="text" id="marginLeft" class="panel-input" placeholder="Left">
+    </div>
+    <input type="text" id="margin" class="panel-input" placeholder="All sides" style="margin-top: 8px;">
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">Padding</label>
+    <div class="grid-2">
+      <input type="text" id="paddingTop" class="panel-input" placeholder="Top">
+      <input type="text" id="paddingRight" class="panel-input" placeholder="Right">
+      <input type="text" id="paddingBottom" class="panel-input" placeholder="Bottom">
+      <input type="text" id="paddingLeft" class="panel-input" placeholder="Left">
+    </div>
+    <input type="text" id="padding" class="panel-input" placeholder="All sides" style="margin-top: 8px;">
+  </div>
+</div>
+
+<!-- Border -->
+<div class="section-header">BORDER</div>
+<div class="form-section">
+  <div class="form-group">
+    <label class="form-label">Width</label>
+    <input type="text" id="borderWidth" class="panel-input" placeholder="1px">
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">Style</label>
+    <select id="borderStyle" class="panel-select">
+      <option value="">Default</option>
+      <option value="solid">Solid</option>
+      <option value="dashed">Dashed</option>
+      <option value="dotted">Dotted</option>
+      <option value="none">None</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">Radius</label>
+    <input type="text" id="borderRadius" class="panel-input" placeholder="0px">
+  </div>
+</div>
+
+<!-- Effects -->
+<div class="section-header">EFFECTS</div>
+<div class="form-section">
+  <div class="form-group">
+    <label class="form-label">Box Shadow</label>
+    <select id="shadowPreset" class="panel-select" style="margin-bottom: 8px;">
+      <option value="Default">Default</option>
+      <option value="none">None</option>
+      <option value="0 1px 2px rgba(0,0,0,0.1)">Small</option>
+      <option value="0 2px 4px rgba(0,0,0,0.1)">Medium</option>
+      <option value="0 4px 8px rgba(0,0,0,0.15)">Large</option>
+    </select>
+    <input type="text" id="boxShadow" class="panel-input" placeholder="Custom shadow">
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">Opacity</label>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+      <span class="value-display" id="opacityDisplay">1</span>
+    </div>
+    <input type="range" id="opacity" min="0" max="1" step="0.1" value="1">
+  </div>
+</div>
+
+<!-- Actions -->
+<div class="form-section" style="padding: 24px 16px;">
+  <button id="resetBtn">RESET CHANGES</button>
+  <button id="submitBtn">SEND TO VS CODE</button>
+</div>

@@ -1,0 +1,397 @@
+/* ============================================
+   STYLECAST ELEMENT INSPECTOR - VERCEL BRUTALISM
+   ============================================ */
+
+:root {
+  --inspector-bg: #ffffff;
+  --inspector-bg-alt: #fafafa;
+  --inspector-border: #000000;
+  --inspector-border-light: #e5e5e5;
+  --inspector-text: #000000;
+  --inspector-text-muted: #666666;
+  --inspector-mono: 'SF Mono', 'Consolas', 'Monaco', monospace;
+  --inspector-sans: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+}
+
+/* Base Overlay - CSS Peeper Style */
+.production-inspector-overlay {
+  position: absolute;
+  background: rgba(0, 123, 255, 0.3);
+  border: 4px solid #007bff;
+  pointer-events: none;
+  z-index: 2147483647;
+  box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+}
+
+/* Tooltip */
+.production-inspector-tooltip {
+  position: fixed !important;
+  background: var(--inspector-border) !important;
+  color: var(--inspector-bg) !important;
+  padding: 4px 8px !important;
+  border-radius: 0 !important;
+  font-size: 11px !important;
+  font-family: var(--inspector-mono) !important;
+  z-index: 1000000 !important;
+  display: none !important;
+  pointer-events: none !important;
+  max-width: 300px !important;
+  word-wrap: break-word !important;
+  box-shadow: none !important;
+  border: 1px solid var(--inspector-border) !important;
+  font-weight: 400 !important;
+  letter-spacing: 0 !important;
+  text-transform: uppercase !important;
+}
+
+/* Main Edit Panel */
+.production-edit-panel {
+  position: fixed !important;
+  top: 0 !important;
+  right: 0 !important;
+  width: 400px !important;
+  height: 100vh !important;
+  background: #ffffff !important;
+  border-left: 2px solid #000000 !important;
+  box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15) !important;
+  z-index: 2147483646 !important;
+  display: none !important;
+  font-family: var(--inspector-mono) !important;
+  overflow-y: auto !important;
+  color: var(--inspector-text) !important;
+  -webkit-font-smoothing: antialiased !important;
+}
+
+/* Panel Header */
+.panel-header {
+  background: var(--inspector-bg) !important;
+  padding: 16px !important;
+  color: var(--inspector-text) !important;
+  border-bottom: 2px solid var(--inspector-border) !important;
+}
+
+.panel-title {
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.5px !important;
+  text-transform: uppercase !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.panel-subtitle {
+  font-size: 11px !important;
+  color: var(--inspector-text-muted) !important;
+  margin-top: 4px !important;
+  font-weight: 400 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+}
+
+/* Close Button */
+#closePanel {
+  background: transparent !important;
+  border: 1px solid var(--inspector-border) !important;
+  font-size: 16px !important;
+  cursor: pointer !important;
+  color: var(--inspector-text) !important;
+  padding: 8px !important;
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 0 !important;
+  transition: opacity 100ms ease !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: none !important;
+  font-family: var(--inspector-mono) !important;
+}
+
+#closePanel:hover {
+  opacity: 0.6 !important;
+  background: transparent !important;
+  transform: none !important;
+}
+
+#closePanel:active {
+  background: var(--inspector-border) !important;
+  color: var(--inspector-bg) !important;
+}
+
+/* Element Info Card */
+.element-info-card {
+  background: var(--inspector-bg-alt) !important;
+  padding: 12px !important;
+  border-bottom: 1px solid var(--inspector-border-light) !important;
+  font-size: 11px !important;
+}
+
+.element-info-row {
+  display: flex !important;
+  justify-content: space-between !important;
+  padding: 6px 0 !important;
+  border-bottom: 1px solid var(--inspector-border-light) !important;
+}
+
+.element-info-row:last-child {
+  border-bottom: none !important;
+}
+
+.element-info-label {
+  color: var(--inspector-text-muted) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  font-size: 11px !important;
+}
+
+.element-info-value {
+  color: var(--inspector-text) !important;
+  font-family: var(--inspector-mono) !important;
+  text-align: right !important;
+  font-size: 11px !important;
+}
+
+/* Section Headers */
+.section-header {
+  background: var(--inspector-bg-alt) !important;
+  padding: 12px 16px !important;
+  border-bottom: 1px solid var(--inspector-border) !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  color: var(--inspector-text) !important;
+  margin: 0 !important;
+}
+
+/* Input Fields */
+.panel-input,
+.panel-textarea,
+.panel-select {
+  width: 100% !important;
+  padding: 8px !important;
+  border: 1px solid var(--inspector-border) !important;
+  border-radius: 0 !important;
+  font-size: 11px !important;
+  background: var(--inspector-bg) !important;
+  font-family: var(--inspector-mono) !important;
+  color: var(--inspector-text) !important;
+  transition: opacity 100ms ease !important;
+  box-shadow: none !important;
+}
+
+.panel-input:focus,
+.panel-textarea:focus,
+.panel-select:focus {
+  outline: none !important;
+  border-color: var(--inspector-border) !important;
+  box-shadow: 0 0 0 2px var(--inspector-border) !important;
+}
+
+.panel-input:hover,
+.panel-select:hover {
+  opacity: 0.8 !important;
+}
+
+/* Range Sliders */
+input[type="range"] {
+  -webkit-appearance: none !important;
+  width: 100% !important;
+  height: 2px !important;
+  background: var(--inspector-border-light) !important;
+  border-radius: 0 !important;
+  outline: none !important;
+  cursor: pointer !important;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  width: 14px !important;
+  height: 14px !important;
+  background: var(--inspector-border) !important;
+  border-radius: 0 !important;
+  cursor: pointer !important;
+  border: 1px solid var(--inspector-border) !important;
+  transition: opacity 100ms ease !important;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  opacity: 0.6 !important;
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 14px !important;
+  height: 14px !important;
+  background: var(--inspector-border) !important;
+  border-radius: 0 !important;
+  cursor: pointer !important;
+  border: 1px solid var(--inspector-border) !important;
+}
+
+/* Color Inputs */
+input[type="color"] {
+  width: 48px !important;
+  height: 48px !important;
+  border: 2px solid var(--inspector-border) !important;
+  border-radius: 0 !important;
+  cursor: pointer !important;
+  padding: 0 !important;
+  transition: opacity 100ms ease !important;
+  -webkit-appearance: none !important;
+}
+
+input[type="color"]:hover {
+  opacity: 0.8 !important;
+}
+
+input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0 !important;
+}
+
+input[type="color"]::-webkit-color-swatch {
+  border: none !important;
+  border-radius: 0 !important;
+}
+
+/* Button Groups */
+.button-group {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(50px, 1fr)) !important;
+  gap: 4px !important;
+}
+
+.btn-group-item {
+  padding: 8px !important;
+  border: 1px solid var(--inspector-border) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  cursor: pointer !important;
+  font-size: 11px !important;
+  font-family: var(--inspector-mono) !important;
+  transition: opacity 100ms ease !important;
+  color: var(--inspector-text) !important;
+  font-weight: 400 !important;
+}
+
+.btn-group-item:hover {
+  opacity: 0.6 !important;
+}
+
+.btn-group-item.active {
+  background: var(--inspector-border) !important;
+  color: var(--inspector-bg) !important;
+}
+
+/* Action Buttons */
+#resetBtn,
+#submitBtn {
+  width: 100% !important;
+  padding: 12px !important;
+  border: 1px solid var(--inspector-border) !important;
+  border-radius: 0 !important;
+  cursor: pointer !important;
+  font-weight: 400 !important;
+  font-size: 11px !important;
+  transition: opacity 100ms ease !important;
+  font-family: var(--inspector-mono) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  color: var(--inspector-text) !important;
+}
+
+#submitBtn {
+  background: var(--inspector-border) !important;
+  color: var(--inspector-bg) !important;
+  margin-top: 8px !important;
+}
+
+#resetBtn:hover,
+#submitBtn:hover {
+  opacity: 0.6 !important;
+  transform: none !important;
+}
+
+#resetBtn:active,
+#submitBtn:active {
+  opacity: 0.4 !important;
+}
+
+/* Form Sections */
+.form-section {
+  padding: 16px !important;
+  border-bottom: 1px solid var(--inspector-border-light) !important;
+}
+
+.form-group {
+  margin-bottom: 16px !important;
+}
+
+.form-group:last-child {
+  margin-bottom: 0 !important;
+}
+
+.form-label {
+  display: block !important;
+  margin-bottom: 8px !important;
+  font-size: 11px !important;
+  color: var(--inspector-text-muted) !important;
+  font-weight: 400 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+}
+
+/* Value Display Badges */
+.value-display {
+  background: var(--inspector-border) !important;
+  color: var(--inspector-bg) !important;
+  padding: 4px 8px !important;
+  border-radius: 0 !important;
+  font-size: 11px !important;
+  font-weight: 400 !important;
+  font-family: var(--inspector-mono) !important;
+  display: inline-block !important;
+  min-width: 50px !important;
+  text-align: center !important;
+}
+
+/* Grid Layouts */
+.grid-2 {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 8px !important;
+}
+
+.grid-4 {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 8px !important;
+}
+
+/* Hide decorative elements */
+.panel-icon,
+.decorative-gradient,
+.animated-bg,
+[style*="animation"] {
+  display: none !important;
+}
+
+/* Scrollbar */
+.production-edit-panel::-webkit-scrollbar {
+  width: 6px !important;
+}
+
+.production-edit-panel::-webkit-scrollbar-track {
+  background: var(--inspector-bg-alt) !important;
+}
+
+.production-edit-panel::-webkit-scrollbar-thumb {
+  background: var(--inspector-border) !important;
+  border-radius: 0 !important;
+}
+
+.production-edit-panel::-webkit-scrollbar-thumb:hover {
+  background: var(--inspector-text) !important;
+}

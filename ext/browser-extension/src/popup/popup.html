@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="popup.css">
+  <title>Stylecast</title>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <div class="title-section">
+        <div class="logo">S</div>
+        <div class="title">
+          <h3>Stylecast</h3>
+          <div class="subtitle">Visual Element Editor</div>
+        </div>
+      </div>
+      <div class="status-group">
+        <div class="status" id="status">
+          <span class="dot" id="statusDot"></span>
+          <span id="statusText">Disconnected</span>
+        </div>
+        <button id="reconnectButton" class="reconnect-button" style="display: none;" title="Reconnect to VS Code">
+          <span>RECONNECT</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Instructions -->
+    <div class="instructions" id="instructions">
+      <div class="instruction-item">
+        <span class="instruction-number">1</span>
+        <span class="instruction-text">Start Inspector</span>
+      </div>
+      <div class="instruction-item">
+        <span class="instruction-number">2</span>
+        <span class="instruction-text">Click any element on the page</span>
+      </div>
+      <div class="instruction-item">
+        <span class="instruction-number">3</span>
+        <span class="instruction-text">Edit styles in live editor</span>
+      </div>
+      <div class="instruction-item">
+        <span class="instruction-number">4</span>
+        <span class="instruction-text">Send changes to VS Code</span>
+      </div>
+    </div>
+
+    <!-- Main Controls -->
+    <div class="main-controls">
+      <button id="toggleInspector" class="primary-button">
+        <span id="inspectorText">Start Inspector</span>
+      </button>
+    </div>
+
+    <!-- Live Preview Mode -->
+    <div class="live-preview-card" id="livePreviewCard" style="display: none;">
+      <div class="live-preview-header">
+        <span class="live-icon">⚡</span>
+        <span>Live Editor</span>
+      </div>
+      <div class="live-preview-content" id="livePreviewContent">
+        <div class="editing-element-info">
+          <div class="element-tag" id="editingElementTag">div</div>
+          <div class="element-details" id="editingElementDetails">
+            <div class="detail-item">
+              <span class="detail-label">ID:</span>
+              <span class="detail-value" id="editingElementId">none</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Classes:</span>
+              <span class="detail-value" id="editingElementClasses">none</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Size:</span>
+              <span class="detail-value" id="editingElementSize">0×0px</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Style Editor -->
+        <div class="style-editor" id="styleEditor">
+          <!-- Typography Section -->
+          <div class="editor-section">
+            <div class="section-title">Typography</div>
+
+            <div class="editor-group">
+              <label>Text Content</label>
+              <textarea id="editTextContent" class="panel-textarea" rows="3" placeholder="Edit element text..."></textarea>
+            </div>
+
+            <div class="editor-group">
+              <label>Font Family</label>
+              <select id="editFontFamily" class="editor-select">
+                <option value="default">Default</option>
+                <option value="-apple-system, BlinkMacSystemFont, sans-serif">System</option>
+                <option value="Arial, sans-serif">Arial</option>
+                <option value="'Times New Roman', Times, serif">Times New Roman</option>
+                <option value="Georgia, serif">Georgia</option>
+                <option value="'Courier New', monospace">Courier New</option>
+                <option value="Verdana, sans-serif">Verdana</option>
+                <option value="'Helvetica Neue', Helvetica, sans-serif">Helvetica</option>
+              </select>
+            </div>
+
+            <div class="editor-group">
+              <label>Font Size</label>
+              <div class="input-with-display">
+                <input type="range" id="editFontSize" min="8" max="72" value="16">
+                <input type="text" id="editFontSizeText" value="16px" class="value-input">
+              </div>
+            </div>
+
+            <div class="editor-group">
+              <label>Font Weight</label>
+              <select id="editFontWeight" class="editor-select">
+                <option value="300">Light</option>
+                <option value="400">Regular</option>
+                <option value="500">Medium</option>
+                <option value="600">Semibold</option>
+                <option value="700">Bold</option>
+              </select>
+            </div>
+
+            <div class="editor-group">
+              <label>Line Height</label>
+              <div class="input-with-display">
+                <input type="range" id="editLineHeight" min="0.8" max="3" step="0.1" value="1.5">
+                <input type="text" id="editLineHeightText" value="1.5" class="value-input">
+              </div>
+            </div>
+
+            <div class="editor-group">
+              <label>Letter Spacing</label>
+              <div class="input-with-display">
+                <input type="range" id="editLetterSpacing" min="-0.1" max="0.5" step="0.01" value="0">
+                <input type="text" id="editLetterSpacingText" value="0em" class="value-input">
+              </div>
+            </div>
+
+            <div class="editor-group">
+              <label>Text Align</label>
+              <div class="button-group-horizontal">
+                <button type="button" class="style-btn" data-property="text-align" data-value="left" title="Left">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                    <path d="M1 2h14v2H1V2zm0 4h10v2H1V6zm0 4h14v2H1v-2zm0 4h10v2H1v-2z"/>
+                  </svg>
+                </button>
+                <button type="button" class="style-btn" data-property="text-align" data-value="center" title="Center">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                    <path d="M1 2h14v2H1V2zm2 4h10v2H3V6zm-2 4h14v2H1v-2zm2 4h10v2H3v-2z"/>
+                  </svg>
+                </button>
+                <button type="button" class="style-btn" data-property="text-align" data-value="right" title="Right">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                    <path d="M1 2h14v2H1V2zm4 4h10v2H5V6zm-4 4h14v2H1v-2zm4 4h10v2H5v-2z"/>
+                  </svg>
+                </button>
+                <button type="button" class="style-btn" data-property="text-align" data-value="justify" title="Justify">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                    <path d="M1 2h14v2H1V2zm0 4h14v2H1V6zm0 4h14v2H1v-2zm0 4h14v2H1v-2z"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="editor-group">
+              <label>Decoration</label>
+              <div class="button-group-horizontal">
+                <button type="button" class="style-btn italic-btn" data-property="font-style" data-value="italic" title="Italic">
+                  <span style="font-style: italic; font-family: Georgia, serif;">I</span>
+                </button>
+                <button type="button" class="style-btn" data-property="text-decoration" data-value="underline" title="Underline">
+                  <span style="text-decoration: underline;">U</span>
+                </button>
+                <button type="button" class="style-btn" data-property="text-decoration" data-value="line-through" title="Strikethrough">
+                  <span style="text-decoration: line-through;">S</span>
+                </button>
+                <button type="button" class="style-btn" data-property="text-transform" data-value="uppercase" title="Uppercase">
+                  <span style="font-size: 10px; font-weight: 700;">TT</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Colors Section -->
+          <div class="editor-section">
+            <div class="section-title">Colors</div>
+            <div class="editor-group">
+              <label>Text Color</label>
+              <div class="color-input-group">
+                <input type="color" id="editTextColor" value="#000000">
+                <input type="text" id="editTextColorText" value="#000000" class="value-input">
+              </div>
+            </div>
+            <div class="editor-group">
+              <label>Background</label>
+              <div class="color-input-group">
+                <input type="color" id="editBgColor" value="#ffffff">
+                <input type="text" id="editBgColorText" value="transparent" class="value-input">
+              </div>
+            </div>
+          </div>
+
+          <!-- Layout Section -->
+          <div class="editor-section">
+            <div class="section-title">Layout</div>
+
+            <div class="editor-group">
+              <label>Width</label>
+              <input type="text" id="editWidth" value="auto" class="value-input" placeholder="auto, 100px, 50%">
+            </div>
+
+            <div class="editor-group">
+              <label>Height</label>
+              <input type="text" id="editHeight" value="auto" class="value-input" placeholder="auto, 100px, 50%">
+            </div>
+
+            <div class="editor-group">
+              <label>Display</label>
+              <select id="editDisplay" class="editor-select">
+                <option value="default">Default</option>
+                <option value="block">Block</option>
+                <option value="inline">Inline</option>
+                <option value="inline-block">Inline Block</option>
+                <option value="flex">Flex</option>
+                <option value="grid">Grid</option>
+                <option value="none">None</option>
+              </select>
+            </div>
+
+            <div class="editor-group">
+              <label>Position</label>
+              <select id="editPosition" class="editor-select">
+                <option value="default">Default</option>
+                <option value="static">Static</option>
+                <option value="relative">Relative</option>
+                <option value="absolute">Absolute</option>
+                <option value="fixed">Fixed</option>
+                <option value="sticky">Sticky</option>
+              </select>
+            </div>
+
+            <div class="editor-group">
+              <label>Padding</label>
+              <input type="text" id="editPadding" value="0px" class="value-input" placeholder="0px, 10px 20px">
+            </div>
+
+            <div class="editor-group">
+              <label>Margin</label>
+              <input type="text" id="editMargin" value="0px" class="value-input" placeholder="0px, 10px 20px, auto">
+            </div>
+          </div>
+
+          <!-- Border Section -->
+          <div class="editor-section">
+            <div class="section-title">Border</div>
+
+            <div class="editor-group">
+              <label>Border Width</label>
+              <input type="text" id="editBorderWidth" value="0px" class="value-input" placeholder="0px, 1px, 2px 4px">
+            </div>
+
+            <div class="editor-group">
+              <label>Border Style</label>
+              <select id="editBorderStyle" class="editor-select">
+                <option value="default">Default</option>
+                <option value="solid">Solid</option>
+                <option value="dashed">Dashed</option>
+                <option value="dotted">Dotted</option>
+                <option value="double">Double</option>
+                <option value="none">None</option>
+              </select>
+            </div>
+
+            <div class="editor-group">
+              <label>Border Color</label>
+              <div class="color-input-group">
+                <input type="color" id="editBorderColor" value="#000000">
+                <input type="text" id="editBorderColorText" value="#000000" class="value-input">
+              </div>
+            </div>
+
+            <div class="editor-group">
+              <label>Border Radius</label>
+              <input type="text" id="editBorderRadius" value="0px" class="value-input" placeholder="0px, 4px, 50%">
+            </div>
+          </div>
+
+          <!-- Appearance Section -->
+          <div class="editor-section">
+            <div class="section-title">Appearance</div>
+
+            <div class="editor-group">
+              <label>Opacity</label>
+              <div class="input-with-display">
+                <input type="range" id="editOpacity" min="0" max="100" value="100">
+                <input type="text" id="editOpacityText" value="100%" class="value-input">
+              </div>
+            </div>
+
+            <div class="editor-group">
+              <label>Box Shadow</label>
+              <select id="editBoxShadow" class="editor-select">
+                <option value="default">Default</option>
+                <option value="none">None</option>
+                <option value="0 1px 2px rgba(0,0,0,0.1)">Small</option>
+                <option value="0 2px 4px rgba(0,0,0,0.1)">Medium</option>
+                <option value="0 4px 8px rgba(0,0,0,0.15)">Large</option>
+                <option value="0 8px 16px rgba(0,0,0,0.2)">Extra Large</option>
+                <option value="custom">Custom</option>
+              </select>
+            </div>
+
+            <div class="editor-group" id="customShadowGroup" style="display: none;">
+              <label>Custom Shadow</label>
+              <input type="text" id="editBoxShadowCustom" value="" class="value-input" placeholder="0 4px 6px rgba(0,0,0,0.1)">
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="editor-actions">
+            <button id="sendEditsToVSCode" class="primary-button">Send to VS Code</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Footer -->
+    <div class="footer">
+      <div class="footer-info">
+        <span id="footerHint">Click any element to edit</span>
+      </div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

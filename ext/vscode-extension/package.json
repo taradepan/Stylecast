@@ -1,0 +1,202 @@
+{
+  "name": "stylecast",
+  "displayName": "Stylecast",
+  "description": "Visual element editor - receive styled components from browser",
+  "version": "1.0.0",
+  "publisher": "taradepan",
+  "author": {
+    "name": "Taradepan",
+    "url": "https://github.com/taradepan"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/taradepan/stylecast.git"
+  },
+  "engines": {
+    "vscode": "^1.104.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "stylecast",
+    "visual editor",
+    "css",
+    "styling",
+    "browser",
+    "design tools"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "stylecast.sendMessage",
+        "title": "Send Message to Browser",
+        "category": "Stylecast",
+        "icon": "$(radio-tower)"
+      },
+      {
+        "command": "stylecast.toggleServer",
+        "title": "Toggle WebSocket Server",
+        "category": "Stylecast",
+        "icon": "$(debug-start)"
+      },
+      {
+        "command": "stylecast.showHistory",
+        "title": "Show Message History",
+        "category": "Stylecast",
+        "icon": "$(history)"
+      },
+      {
+        "command": "stylecast.showStatus",
+        "title": "Show Server Status",
+        "category": "Stylecast",
+        "icon": "$(info)"
+      },
+      {
+        "command": "stylecast.sendNotification",
+        "title": "Send Notification to Browser",
+        "category": "Stylecast",
+        "icon": "$(bell)"
+      },
+      {
+        "command": "stylecast.sendToCopilot",
+        "title": "Paste Message to GitHub Copilot Chat",
+        "category": "Stylecast",
+        "icon": "$(github)"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "stylecast.sendMessage",
+        "key": "ctrl+shift+w",
+        "mac": "cmd+shift+w",
+        "when": "!terminalFocus"
+      },
+      {
+        "command": "stylecast.toggleServer",
+        "key": "ctrl+shift+alt+w",
+        "mac": "cmd+shift+alt+w"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "stylecast.sendMessage",
+          "when": "true"
+        },
+        {
+          "command": "stylecast.toggleServer",
+          "when": "true"
+        },
+        {
+          "command": "stylecast.showHistory",
+          "when": "true"
+        },
+        {
+          "command": "stylecast.showStatus",
+          "when": "true"
+        },
+        {
+          "command": "stylecast.sendNotification",
+          "when": "true"
+        },
+        {
+          "command": "stylecast.sendToCopilot",
+          "when": "true"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Stylecast",
+      "properties": {
+        "stylecast.autoStart": {
+          "type": "boolean",
+          "default": true,
+          "description": "Auto-start server on VS Code startup",
+          "scope": "window"
+        },
+        "stylecast.port": {
+          "type": "number",
+          "default": 47823,
+          "minimum": 1024,
+          "maximum": 65535,
+          "description": "WebSocket server port (requires restart)",
+          "scope": "window"
+        },
+        "stylecast.maxConnections": {
+          "type": "number",
+          "default": 10,
+          "minimum": 1,
+          "maximum": 100,
+          "description": "Maximum number of concurrent browser connections",
+          "scope": "window"
+        },
+        "stylecast.messageHistoryLimit": {
+          "type": "number",
+          "default": 100,
+          "minimum": 10,
+          "maximum": 1000,
+          "description": "Maximum number of messages to keep in history",
+          "scope": "window"
+        },
+        "stylecast.enableLogging": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable detailed logging to output channel",
+          "scope": "window"
+        },
+        "stylecast.autoSendToCopilot": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically paste styled components into GitHub Copilot Chat",
+          "scope": "window"
+        },
+        "stylecast.copilotPrefix": {
+          "type": "string",
+          "default": "",
+          "description": "Prefix to add when pasting messages into Copilot Chat",
+          "scope": "window"
+        },
+        "stylecast.enableCopilotIntegration": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable automatic Copilot Chat integration",
+          "scope": "window"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./ && npm run bundle",
+    "bundle": "esbuild out/extension.js --bundle --minify --platform=node --format=cjs --external:vscode --outfile=out/extension-bundled.js --allow-overwrite && mv out/extension-bundled.js out/extension.js",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile",
+    "lint": "eslint src --ext ts",
+    "test": "vscode-test",
+    "package": "vsce package",
+    "publish": "vsce publish"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.1.0",
+    "@eslint/js": "^9.15.0",
+    "@types/node": "^22.0.0",
+    "@types/vscode": "^1.104.0",
+    "@types/ws": "^8.5.12",
+    "@typescript-eslint/eslint-plugin": "^8.15.0",
+    "@typescript-eslint/parser": "^8.15.0",
+    "@vscode/test-cli": "^0.0.10",
+    "@vscode/test-electron": "^2.4.1",
+    "@vscode/vsce": "^3.2.0",
+    "esbuild": "^0.25.10",
+    "eslint": "^9.15.0",
+    "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "ws": "^8.18.3"
+  }
+}
