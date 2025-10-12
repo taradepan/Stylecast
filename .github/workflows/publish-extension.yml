@@ -2,8 +2,8 @@ name: Publish Extension
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
@@ -36,14 +36,26 @@ jobs:
         run: npx vsce publish --packagePath stylecast-*.vsix -p ${{ secrets.VSCE_PAT }}
         continue-on-error: true
 
-      - name: Get VSIX path
+      - name: Get VSIX path and version
         id: vsix
-        run: echo "path=$(ls stylecast-*.vsix)" >> $GITHUB_OUTPUT
+        run: |
+          echo "path=$(ls stylecast-*.vsix)" >> $GITHUB_OUTPUT
+          echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
 
       - name: Create GitHub Release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v1
         with:
+          files: ext/vscode-extension/${{ steps.vsix.outputs.path }}
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create or Update GitHub Release (manual trigger)
+        if: github.event_name == 'workflow_dispatch'
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ steps.vsix.outputs.version }}
           files: ext/vscode-extension/${{ steps.vsix.outputs.path }}
           generate_release_notes: true
         env:
