@@ -1,0 +1,71 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_type:
+        description: 'Version bump type'
+        required: true
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+        default: 'patch'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: 'ext/vscode-extension/package-lock.json'
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Bump version
+        id: version
+        working-directory: ext/vscode-extension
+        run: |
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+
+          npm version ${{ inputs.version_type }} --no-git-tag-version
+
+          NEW_VERSION=$(node -p "require('./package.json').version")
+          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+
+          echo "📦 Bumped from $CURRENT_VERSION to $NEW_VERSION"
+
+      - name: Commit and tag
+        run: |
+          git add ext/vscode-extension/package.json
+          git commit -m "chore: bump version to ${{ steps.version.outputs.new_version }}"
+          git tag "v${{ steps.version.outputs.new_version }}"
+          git push origin main
+          git push origin "v${{ steps.version.outputs.new_version }}"
+
+      - name: Summary
+        run: |
+          echo "### ✨ Release v${{ steps.version.outputs.new_version }} created!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Version:** ${{ steps.version.outputs.current_version }} → ${{ steps.version.outputs.new_version }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "The 'Publish Extension' workflow will now automatically:" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Publish to VS Code Marketplace" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Publish to Open VSX Registry (Cursor)" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Create GitHub Release" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "[View publish workflow →](https://github.com/${{ github.repository }}/actions/workflows/publish-extension.yml)" >> $GITHUB_STEP_SUMMARY
