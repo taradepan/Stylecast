@@ -11,6 +11,8 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    permissions:
+      contents: write
     defaults:
       run:
         working-directory: ext/vscode-extension
@@ -47,6 +49,13 @@ jobs:
           LATEST_TAG=$(git describe --tags --abbrev=0)
           echo "tag_name=$LATEST_TAG" >> $GITHUB_OUTPUT
           echo "Latest tag: $LATEST_TAG"
+
+      - name: List files for debugging
+        run: |
+          echo "Files in current directory:"
+          ls -la
+          echo "Files matching stylecast-*.vsix:"
+          ls -la stylecast-*.vsix || echo "No .vsix files found"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
