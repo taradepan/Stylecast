@@ -1,9 +1,6 @@
 name: Release
 
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
     inputs:
       version_type:
@@ -45,16 +42,24 @@ jobs:
         run: |
           CURRENT_VERSION=$(node -p "require('./package.json').version")
           echo "Current version: $CURRENT_VERSION"
-          echo "Attempting ${{ inputs.version_type }} bump..."
+          
+          # Set default version type if not provided (for push triggers)
+          VERSION_TYPE="${{ inputs.version_type }}"
+          if [ -z "$VERSION_TYPE" ]; then
+            VERSION_TYPE="patch"
+            echo "No version type specified, defaulting to patch"
+          fi
+          
+          echo "Attempting $VERSION_TYPE bump..."
           
           # Try to bump version
-          npm version ${{ inputs.version_type }} --no-git-tag-version
+          npm version $VERSION_TYPE --no-git-tag-version
           
           NEW_VERSION=$(node -p "require('./package.json').version")
           echo "New version: $NEW_VERSION"
           
           if [ "$CURRENT_VERSION" = "$NEW_VERSION" ]; then
-            echo "⚠️  No version change detected for ${{ inputs.version_type }} bump."
+            echo "⚠️  No version change detected for $VERSION_TYPE bump."
             echo "Current version: $CURRENT_VERSION"
             echo "Try using 'minor' or 'major' instead."
             exit 1
