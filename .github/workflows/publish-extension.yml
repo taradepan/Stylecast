@@ -25,6 +25,7 @@ jobs:
         with:
           pat: ${{ secrets.OVSX_PAT }}
           packagePath: ext/vscode-extension
+          dependencies: true
         continue-on-error: true
 
       - name: Publish to VS Code Marketplace
@@ -34,6 +35,7 @@ jobs:
           pat: ${{ secrets.VSCE_PAT }}
           registryUrl: https://marketplace.visualstudio.com
           packagePath: ext/vscode-extension
+          dependencies: true
         continue-on-error: true
 
       - name: Create GitHub Release
