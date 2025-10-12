@@ -9,6 +9,9 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ext/vscode-extension
 
     steps:
       - name: Checkout code
@@ -19,13 +22,15 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Install dependencies
+        run: npm install
+
       - name: Publish to Open VSX Registry (Cursor)
         uses: HaaLeo/publish-vscode-extension@v1
         id: publish-ovsx
         with:
           pat: ${{ secrets.OVSX_PAT }}
           packagePath: ext/vscode-extension
-          dependencies: true
         continue-on-error: true
 
       - name: Publish to VS Code Marketplace
@@ -35,7 +40,6 @@ jobs:
           pat: ${{ secrets.VSCE_PAT }}
           registryUrl: https://marketplace.visualstudio.com
           packagePath: ext/vscode-extension
-          dependencies: true
         continue-on-error: true
 
       - name: Create GitHub Release
