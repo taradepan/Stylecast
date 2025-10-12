@@ -1,0 +1,58 @@
+name: Publish Extension
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        working-directory: ext/vscode-extension
+        run: npm ci
+
+      - name: Compile and package
+        working-directory: ext/vscode-extension
+        run: npm run package
+
+      - name: Publish to VS Code Marketplace
+        if: success()
+        working-directory: ext/vscode-extension
+        run: npm run publish -- --pat ${{ secrets.VSCE_PAT }}
+        continue-on-error: true
+
+      - name: Publish to Open VSX Registry (Cursor)
+        if: success()
+        working-directory: ext/vscode-extension
+        run: npx ovsx publish -p ${{ secrets.OVSX_PAT }}
+        continue-on-error: true
+
+      - name: Upload .vsix artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stylecast-vsix
+          path: 'ext/vscode-extension/*.vsix'
+          retention-days: 30
+
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: 'ext/vscode-extension/*.vsix'
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
