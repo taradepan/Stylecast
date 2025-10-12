@@ -25,28 +25,26 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Package extension
+        run: npm run package
+
       - name: Publish to Open VSX Registry (Cursor)
-        uses: HaaLeo/publish-vscode-extension@v1
-        id: publish-ovsx
-        with:
-          pat: ${{ secrets.OVSX_PAT }}
-          packagePath: ext/vscode-extension
+        run: npx ovsx publish stylecast-*.vsix -p ${{ secrets.OVSX_PAT }}
         continue-on-error: true
 
       - name: Publish to VS Code Marketplace
-        uses: HaaLeo/publish-vscode-extension@v1
-        id: publish-vsce
-        with:
-          pat: ${{ secrets.VSCE_PAT }}
-          registryUrl: https://marketplace.visualstudio.com
-          packagePath: ext/vscode-extension
+        run: npx vsce publish --packagePath stylecast-*.vsix -p ${{ secrets.VSCE_PAT }}
         continue-on-error: true
+
+      - name: Get VSIX path
+        id: vsix
+        run: echo "path=$(ls stylecast-*.vsix)" >> $GITHUB_OUTPUT
 
       - name: Create GitHub Release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v1
         with:
-          files: ${{ steps.publish-vsce.outputs.vsixPath }}
+          files: ext/vscode-extension/${{ steps.vsix.outputs.path }}
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
