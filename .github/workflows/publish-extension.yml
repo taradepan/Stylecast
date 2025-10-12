@@ -28,10 +28,10 @@ jobs:
       - name: Cache npm dependencies
         uses: actions/cache@v4
         with:
-          path: ~/.npm
-          key: ${{ runner.os }}-npm-${{ hashFiles('ext/vscode-extension/package-lock.json') }}
+          path: ext/vscode-extension/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('ext/vscode-extension/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-npm-
+            ${{ runner.os }}-node-
 
       - name: Install dependencies
         working-directory: ext/vscode-extension
