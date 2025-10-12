@@ -2,14 +2,16 @@ name: Publish Extension
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
   publish:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    # Only run if this is a manual trigger or if package.json was changed
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.modified, 'ext/vscode-extension/package.json')
     defaults:
       run:
         working-directory: ext/vscode-extension

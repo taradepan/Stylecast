@@ -1,6 +1,9 @@
 name: Release
 
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
     inputs:
       version_type:
@@ -44,11 +47,13 @@ jobs:
           CURRENT_VERSION=$(node -p "require('./package.json').version")
           echo "Current version: $CURRENT_VERSION"
           
-          # Set default version type if not provided (for push triggers)
-          VERSION_TYPE="${{ inputs.version_type }}"
-          if [ -z "$VERSION_TYPE" ]; then
+          # Set version type - patch for push triggers, user choice for manual
+          if [ "${{ github.event_name }}" = "push" ]; then
             VERSION_TYPE="patch"
-            echo "No version type specified, defaulting to patch"
+            echo "Push trigger detected, using patch version bump"
+          else
+            VERSION_TYPE="${{ inputs.version_type }}"
+            echo "Manual trigger detected, using $VERSION_TYPE version bump"
           fi
           
           echo "Attempting $VERSION_TYPE bump..."
