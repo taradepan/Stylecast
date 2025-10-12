@@ -19,10 +19,6 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install dependencies
-        working-directory: ext/vscode-extension
-        run: npm ci
-
       - name: Publish to Open VSX Registry (Cursor)
         uses: HaaLeo/publish-vscode-extension@v1
         id: publish-ovsx
