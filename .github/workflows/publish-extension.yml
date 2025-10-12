@@ -10,8 +10,6 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    # Only run if this is a manual trigger or if package.json was changed
-    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.modified, 'ext/vscode-extension/package.json')
     defaults:
       run:
         working-directory: ext/vscode-extension
@@ -30,18 +28,34 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Check if version changed
+        id: version_check
+        run: |
+          # Check if package.json was modified in this commit
+          if git diff HEAD~1 HEAD --name-only | grep -q "ext/vscode-extension/package.json"; then
+            echo "version_changed=true" >> $GITHUB_OUTPUT
+            echo "✅ Version change detected, will publish"
+          else
+            echo "version_changed=false" >> $GITHUB_OUTPUT
+            echo "ℹ️  No version change detected, skipping publish"
+          fi
+
       - name: Package extension
+        if: steps.version_check.outputs.version_changed == 'true'
         run: npm run package
 
       - name: Publish to Open VSX Registry (Cursor)
+        if: steps.version_check.outputs.version_changed == 'true'
         run: npx ovsx publish stylecast-*.vsix -p ${{ secrets.OVSX_PAT }}
         continue-on-error: true
 
       - name: Publish to VS Code Marketplace
+        if: steps.version_check.outputs.version_changed == 'true'
         run: npx vsce publish --packagePath stylecast-*.vsix -p ${{ secrets.VSCE_PAT }}
         continue-on-error: true
 
       - name: Create GitHub Release
+        if: steps.version_check.outputs.version_changed == 'true'
         uses: softprops/action-gh-release@v2
         with:
           files: stylecast-*.vsix
