@@ -38,9 +38,18 @@ jobs:
         run: npx vsce publish --packagePath stylecast-*.vsix -p ${{ secrets.VSCE_PAT }}
         continue-on-error: true
 
+      - name: Get latest tag
+        id: get_tag
+        run: |
+          # Get the latest tag from the repository
+          LATEST_TAG=$(git describe --tags --abbrev=0)
+          echo "tag_name=$LATEST_TAG" >> $GITHUB_OUTPUT
+          echo "Latest tag: $LATEST_TAG"
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ steps.get_tag.outputs.tag_name }}
           files: stylecast-*.vsix
           generate_release_notes: true
         env:
