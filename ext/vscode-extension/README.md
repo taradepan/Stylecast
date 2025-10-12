@@ -1,6 +1,6 @@
 # Stylecast
 
-**Visual element editor that supercharges your vibecoding efficiency.**
+**Visual element editor that supercharges your vibecoding skills...**
 
 Style any website element visually in your browser and send changes directly to AI Chat - no copy/paste, no context switching.
 
