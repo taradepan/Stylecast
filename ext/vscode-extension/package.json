@@ -1,7 +1,7 @@
 {
   "name": "stylecast",
   "displayName": "Stylecast",
-  "description": "Visual element editor - receive styled components from browser",
+  "description": "Visual element editor that supercharges your vibecoding efficiency - style any website and send to AI Chat",
   "version": "1.0.0",
   "publisher": "TaradepanR",
   "icon": "icons/icon.png",
@@ -14,6 +14,10 @@
     "type": "git",
     "url": "https://github.com/taradepan/stylecast.git"
   },
+  "bugs": {
+    "url": "https://github.com/taradepan/stylecast/issues"
+  },
+  "homepage": "https://github.com/taradepan/stylecast#readme",
   "engines": {
     "vscode": "^1.75.0"
   },
@@ -26,7 +30,11 @@
     "css",
     "styling",
     "browser",
-    "design tools"
+    "design tools",
+    "copilot",
+    "cursor",
+    "ai",
+    "websocket"
   ],
   "activationEvents": [
     "onStartupFinished"

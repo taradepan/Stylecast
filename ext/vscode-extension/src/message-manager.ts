@@ -428,8 +428,10 @@ export class MessageManager {
     try {
       // Get the content from clipboard
       const content = await vscode.env.clipboard.readText();
-      
-      // Try to open Cursor Chat with content directly
+
+      this.outputChannel.appendLine(`🎯 Opening Cursor Chat...`);
+
+      // Try to open Cursor Chat
       const cursorChatCommands = [
         'aichat.newchataction',
         'workbench.action.chat.open',
@@ -438,15 +440,14 @@ export class MessageManager {
       ];
 
       let chatOpened = false;
-      
-      // Try to open chat
+
       for (const command of cursorChatCommands) {
         try {
           this.outputChannel.appendLine(`Trying Cursor command: ${command}`);
           await vscode.commands.executeCommand(command);
           this.outputChannel.appendLine(`✅ Successfully executed: ${command}`);
           chatOpened = true;
-          break; // Stop after first successful command
+          break;
         } catch (error) {
           this.outputChannel.appendLine(`❌ Failed Cursor command: ${command}`);
           continue;
@@ -455,55 +456,61 @@ export class MessageManager {
 
       if (!chatOpened) {
         this.outputChannel.appendLine('⚠️ Could not open Cursor Chat automatically');
-        return false;
-      }
-
-      // Wait for chat to open
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      try {
-        // Try to paste into the chat input field
-        const chatPasteCommands = [
-          'aichat.pasteToChat',
-          'workbench.action.chat.paste',
-          'editor.action.clipboardPasteAction' // Fallback
-        ];
-        
-        let pasted = false;
-        for (const pasteCommand of chatPasteCommands) {
-          try {
-            await vscode.commands.executeCommand(pasteCommand);
-            this.outputChannel.appendLine(`✅ Content pasted to Cursor Chat using: ${pasteCommand}`);
-            pasted = true;
-            break;
-          } catch (error) {
-            this.outputChannel.appendLine(`❌ Failed paste command: ${pasteCommand}`);
-            continue;
-          }
-        }
-        
-        if (!pasted) {
-          this.outputChannel.appendLine('⚠️ Could not paste to Cursor Chat automatically');
-          // Show manual instruction
-          vscode.window.showInformationMessage(
-            'Cursor Chat opened! Please paste the content manually (Ctrl+V) into the chat input.',
-            'OK'
-          );
-          return false;
-        }
-        
-        return true;
-      } catch (pasteError) {
-        this.outputChannel.appendLine(`⚠️ Could not paste automatically: ${pasteError}`);
-        // Show manual instruction
         vscode.window.showInformationMessage(
-          'Cursor Chat opened! Please paste the content manually (Ctrl+V) into the chat input.',
+          'Content copied to clipboard. Please open Cursor Chat (Cmd+L) and paste manually.',
           'OK'
         );
         return false;
       }
+
+      // Give chat time to fully open and focus on input
+      this.outputChannel.appendLine(`⏳ Waiting for chat to fully open...`);
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // Now try to paste using the type command which works when chat input is focused
+      try {
+        this.outputChannel.appendLine(`📝 Attempting to type content into chat input...`);
+
+        // Use the 'type' command which sends text to the currently focused input
+        await vscode.commands.executeCommand('type', { text: content });
+
+        this.outputChannel.appendLine(`✅ Content typed into Cursor Chat input`);
+
+        // Show success notification
+        vscode.window.showInformationMessage(
+          '✓ Style changes sent to Cursor Chat!',
+          'OK'
+        );
+
+        return true;
+      } catch (typeError) {
+        this.outputChannel.appendLine(`❌ Type command failed: ${typeError}`);
+
+        // If type fails, try legacy paste approach
+        try {
+          this.outputChannel.appendLine(`🔄 Trying legacy paste method...`);
+
+          // Simulate paste command
+          await vscode.commands.executeCommand('workbench.action.terminal.paste');
+
+          this.outputChannel.appendLine(`✅ Content pasted via terminal paste command`);
+          return true;
+        } catch (pasteError) {
+          this.outputChannel.appendLine(`❌ All automatic paste methods failed`);
+
+          vscode.window.showInformationMessage(
+            'Cursor Chat opened! Content in clipboard - press Cmd+V (Mac) or Ctrl+V to paste.',
+            'OK'
+          );
+          return false;
+        }
+      }
     } catch (error) {
       this.outputChannel.appendLine(`Error opening Cursor Chat: ${error}`);
+      vscode.window.showInformationMessage(
+        'Content copied to clipboard. Please open Cursor Chat manually (Cmd+L) and paste.',
+        'OK'
+      );
       return false;
     }
   }
