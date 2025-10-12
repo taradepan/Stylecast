@@ -19,19 +19,12 @@ Style any website element visually in your browser and send changes directly to 
 - **WebSocket Bridge** - instant communication between browser and editor
 - **Smart Detection** - automatically detects VS Code or Cursor and routes to the right AI chat
 
-## 📦 Installation
-
-1. Install this extension from the marketplace
-2. Install the browser extension:
-   - **Chrome/Edge**: [Load from chrome://extensions](chrome://extensions)
-   - **Firefox**: [Load from about:debugging](about:debugging)
-   - Download: [Browser Extension](https://github.com/taradepan/stylecast)
 
 ## 🚀 Usage
 
 1. Click the Stylecast icon in your browser toolbar
 2. Click "Start Inspector"
-3. **Right-click** any element to open the visual editor
+3. Click any element to open the visual editor
 4. Make your style changes
 5. Click "Send to VS Code/Cursor"
 6. AI Chat opens automatically with your changes ready to apply!
