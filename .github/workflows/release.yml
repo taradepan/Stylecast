@@ -19,6 +19,7 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     permissions:
       contents: write
 
@@ -54,15 +55,8 @@ jobs:
           
           if [ "$CURRENT_VERSION" = "$NEW_VERSION" ]; then
             echo "⚠️  No version change detected for ${{ inputs.version_type }} bump."
-            echo "This happens when the version is already at the latest for the specified type."
-            echo ""
             echo "Current version: $CURRENT_VERSION"
-            echo "Available options:"
-            echo "  - patch: $CURRENT_VERSION (no change)"
-            echo "  - minor: $(echo $CURRENT_VERSION | sed 's/\.[0-9]*$/.0/' | awk -F. '{$NF++; print $1"."$2"."$3}')"
-            echo "  - major: $(echo $CURRENT_VERSION | sed 's/\.[0-9]*\.[0-9]*$/.0.0/' | awk -F. '{$1++; print $1"."$2"."$3}')"
-            echo ""
-            echo "Try using 'minor' or 'major' instead, or manually update the version in package.json."
+            echo "Try using 'minor' or 'major' instead."
             exit 1
           fi
           
